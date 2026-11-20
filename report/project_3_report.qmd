@@ -19,64 +19,164 @@ source("../analysis/project_3_analysis.R")
 
 # Executive summary
 
-This report will identify meaningful household segments, estimate the probability that each household returns during the holdout period, and recommend a non-equal $1,000,000 marketing allocation. The final recommendation must distinguish predicted return probability from incremental marketing opportunity.
+This analysis uses household purchase behavior from January 1 through September 30, 2017 to segment customers and predict whether they purchase again during the October 1 through December 31 holdout period. There are `r nrow(customer_data)` households in the analysis, and the observed holdout return rate is `r scales::percent(mean(customer_data$retained), accuracy = 0.1)`.
 
-# Marketing strategy and budget allocation
+The analysis identifies four actionable groups. High-value loyal shoppers have the greatest observed value and return rate, but they do not automatically receive the largest budget because many are likely to return without an expensive intervention. The largest experimental allocation goes to growth-potential regulars, who have substantial value and a lower return rate than the two most active groups. The proposed allocation is deliberately non-equal and totals $1,000,000.
+
+This is a prioritization framework, not a causal estimate. The recommended campaign must use treatment and control groups to measure incremental purchases, revenue, margin, and retention.
+
+# Marketing strategy and $1 million budget allocation
 
 ```{r}
-readr::read_csv("../output/budget_allocation_starting_point.csv", show_col_types = FALSE)
+budget <- readr::read_csv("../output/budget_allocation_starting_point.csv", show_col_types = FALSE)
+budget_display <- budget |>
+  dplyr::mutate(
+    allocation = scales::dollar(allocation, accuracy = 1),
+    budget_pct = scales::percent(budget_pct, accuracy = 1),
+    predicted_return_rate = scales::percent(predicted_return_rate, accuracy = 0.1),
+    monetary = scales::dollar(monetary, accuracy = 0.01)
+  )
+budget_total <- tibble::tibble(
+  segment_label = "TOTAL",
+  customers = sum(budget$customers),
+  predicted_return_rate = "—",
+  monetary = "—",
+  marketing_action = "—",
+  allocation = scales::dollar(sum(budget$allocation), accuracy = 1),
+  budget_pct = scales::percent(sum(budget$budget_pct), accuracy = 1),
+  justification = "Full proposed budget"
+)
+dplyr::bind_rows(budget_display, budget_total) |>
+  knitr::kable(col.names = c("Segment", "Customers", "Predicted return", "Median feature-period spend", "Marketing action", "Allocation", "Budget", "Justification"))
 ```
 
-The starting allocation above is proportional to segment size. It is intentionally a baseline: the final submission should revise it using customer value, retention risk, growth opportunity, contact cost, and a proposed test-and-control design.
+The allocation logic is:
+
+- **40% ($400,000) to growth-potential regulars:** the largest segment has moderate value and an observed return rate below the two most active groups, creating room for targeted frequency and basket-building tests.
+- **25% ($250,000) to frequent broad shoppers:** this is a large, valuable group with a very high return rate. The action emphasizes relevant cross-category offers rather than indiscriminate discounts.
+- **20% ($200,000) to high-value loyal shoppers:** this group has the highest median spend and return rate. Retention touches and VIP access protect value while limiting unnecessary discount cost.
+- **15% ($150,000) to at-risk low-engagement shoppers:** this group has the lowest spend and return rate. Low-cost win-back communication is appropriate; expensive incentives should be tested before scaling.
+
+Success should be measured against a holdout control group using incremental retained households, incremental revenue and margin, cost per incremental retained household, and return on marketing spend. Predicted return probability is not the same as incremental lift, so the highest-probability group should not automatically receive the most money.
 
 # Data and customer-level feature construction
 
-The unit of analysis is one household. The feature period is the first 75% of the observed transaction window, and the holdout period is the remaining 25%. The outcome `retained` equals 1 when the household makes at least one purchase during the holdout period.
+The unit of analysis is one household. The feature period contains each household's recency, purchase frequency, spending, basket size, product diversity, category and brand breadth, and coupon usage. The binary outcome `retained` equals 1 when the household makes at least one purchase during the holdout period.
 
 ```{r}
-customer_data |> dplyr::summarise(
-  households = dplyr::n(),
-  retention_rate = mean(retained),
-  median_monetary = median(monetary),
-  median_frequency = median(frequency)
-)
+customer_data |>
+  dplyr::summarise(
+    households = dplyr::n(),
+    retention_rate = mean(retained),
+    median_monetary = median(monetary),
+    median_frequency = median(frequency)
+  ) |>
+  dplyr::mutate(retention_rate = scales::percent(retention_rate, accuracy = 0.1)) |>
+  knitr::kable()
 ```
+
+The time-based split prevents future purchases from being used as predictors of the same future outcome. Demographic fields are retained in the customer table for possible future targeting, but the initial model focuses on observed behavior and cluster membership.
 
 # PCA and interpretation of customer-behavior dimensions
 
 ```{r}
-readr::read_csv("../output/pca_variance.csv", show_col_types = FALSE)
-readr::read_csv("../output/pca_loadings.csv", show_col_types = FALSE) |> head(10)
+pca_variance <- readr::read_csv("../output/pca_variance.csv", show_col_types = FALSE)
+pca_variance |>
+  dplyr::slice_head(n = 5) |>
+  dplyr::mutate(dplyr::across(c(proportion, cumulative), ~ scales::percent(.x, accuracy = 0.1))) |>
+  knitr::kable()
+
+readr::read_csv("../output/pca_loadings.csv", show_col_types = FALSE) |>
+  dplyr::select(feature, PC1, PC2, PC3) |>
+  knitr::kable(digits = 3)
 ```
 
-Interpret the leading components from the loading table. A defensible interpretation should describe which observed behaviors move together and should not call a component “customer quality” without reference to the actual loadings.
+PC1 explains `r scales::percent(pca_variance$proportion[1], accuracy = 0.1)` of standardized behavioral variation and is primarily a breadth-and-activity axis: frequency, monetary value, product diversity, category breadth, and manufacturer breadth have the largest negative loadings, while recency is smaller and positive. The sign of a principal component is arbitrary; the important evidence is which variables move together.
 
-# K-means clustering and selection of `k`
+PC2 explains `r scales::percent(pca_variance$proportion[2], accuracy = 0.1)` and is dominated by average basket size, with smaller contributions from brand breadth and recency. PC3 explains `r scales::percent(pca_variance$proportion[3], accuracy = 0.1)` and contrasts coupon activity and basket size with broader spending behavior. The first three components explain approximately `r scales::percent(sum(pca_variance$proportion[1:3]), accuracy = 0.1)` of the variation, so PCA is useful for clustering while the original variables remain necessary for business interpretation.
+
+# K-means clustering and choice of `k`
 
 ```{r}
-readr::read_csv("../output/cluster_diagnostics.csv", show_col_types = FALSE)
+readr::read_csv("../output/cluster_diagnostics.csv", show_col_types = FALSE) |>
+  knitr::kable(digits = 1)
 ```
 
-The starter analysis uses four clusters so the report can be developed end-to-end. The final choice of `k` should be defended using diagnostics, cluster size, stability, and whether the groups support different actions.
+The final choice is **k = 4**. Increasing k reduces within-cluster sum of squares, but the improvement becomes less useful from a business perspective: k = 5 and k = 6 create smaller groups without adding a clearly distinct action in the available profile. The average silhouette width provides a separation check, while the stability columns show the range of smallest-cluster sizes across ten random starts. The four-cluster solution has group sizes of 169, 400, 646, and 1,113 households, so every group is large enough to target and evaluate. The four groups also separate naturally by recency, frequency, spending, breadth, and PCA position, which supports distinct marketing actions.
 
 # Business segments
 
 ```{r}
-readr::read_csv("../output/segment_profile.csv", show_col_types = FALSE)
+profiles <- readr::read_csv("../output/segment_profile.csv", show_col_types = FALSE) |>
+  dplyr::mutate(
+    segment = dplyr::recode(as.character(cluster),
+      `1` = "Frequent broad shoppers",
+      `2` = "High-value loyal shoppers",
+      `3` = "Growth-potential regulars",
+      `4` = "At-risk low-engagement shoppers"),
+    return_rate = scales::percent(predicted_return_rate, accuracy = 0.1)
+  ) |>
+  dplyr::left_join(budget |> dplyr::select(segment = segment_label, marketing_action), by = "segment") |>
+  dplyr::select(segment, customers, customer_pct, recency, frequency, monetary, avg_basket, product_diversity, PC1, PC2, return_rate, marketing_action)
+profiles |>
+  dplyr::mutate(customer_pct = scales::percent(customer_pct, accuracy = 0.1), monetary = scales::dollar(monetary, accuracy = 0.01)) |>
+  knitr::kable(col.names = c("Segment", "Customers", "% of customers", "Recency", "Frequency", "Median spend", "Avg. basket", "Products", "Median PC1", "Median PC2", "Return rate", "Marketing action"))
 ```
 
-Replace “Cluster 1” through “Cluster 4” with evidence-based labels. For each segment, explain its value, return behavior, likely need, and proposed marketing action.
+**Frequent broad shoppers (Cluster 1)** have a median of 23 baskets, spend a median of $118.26, and return at an observed rate of 98.5%. They are active and broad shoppers, so personalized cross-category recommendations and loyalty benefits are more appropriate than blanket discounts.
+
+**High-value loyal shoppers (Cluster 2)** are the smallest group at 169 households but have the strongest profile: 46 baskets, median spend of $246.38, 71 products, and a 99.4% observed return rate. Their strategy is value protection—relevant access, early offers, and service—rather than paying customers to do what they already tend to do.
+
+**Growth-potential regulars (Cluster 3)** are the largest group at 1,113 households. They have 8 baskets, median spend of $33.38, and an 86.2% return rate. Their scale, moderate engagement, and room to increase frequency make them the best segment for controlled bundle and frequency-incentive experiments.
+
+**At-risk low-engagement shoppers (Cluster 4)** have median recency of 121.5 days, only 2 baskets, median spend of $6.60, and a 58.3% return rate. They should receive inexpensive automated win-back communication first. Higher-cost discounts should be reserved for randomized tests that demonstrate incremental value.
+
+The cluster numbers are mathematical identifiers; the business labels are translations of those clusters using the original behavior measures and PCA position. In other words, the business segments do not create a second partition of the customers—they make the k-means groups understandable and actionable. The PCA columns in the table provide an additional compact description of each group's position in the behavioral space.
 
 # Logistic regression for future return
 
+The model predicts holdout return using behavior variables and the four-cluster label. The initial in-sample confusion matrix is retained for transparency, but the primary evaluation below uses a stratified 80/20 holdout split.
+
 ```{r}
-readr::read_csv("../output/model_summary.csv", show_col_types = FALSE)
-readr::read_csv("../output/logistic_coefficients.csv", show_col_types = FALSE)
-readr::read_csv("../output/confusion_matrix.csv", show_col_types = FALSE)
+readr::read_csv("../output/model_comparison.csv", show_col_types = FALSE) |>
+  dplyr::mutate(dplyr::across(c(accuracy, sensitivity, specificity, precision, roc_auc), ~ round(.x, 3))) |>
+  knitr::kable()
+
+readr::read_csv("../output/confusion_matrix.csv", show_col_types = FALSE) |>
+  knitr::kable()
+
+readr::read_csv("../output/segment_model_performance.csv", show_col_types = FALSE) |>
+  dplyr::mutate(dplyr::across(c(actual_return_rate, mean_predicted_probability, roc_auc), ~ round(.x, 3))) |>
+  knitr::kable()
 ```
 
-The initial script reports in-sample classification metrics. Before submission, add a true train/test split or cross-validation, ROC-AUC, calibration, and performance by business segment. Explain whether adding clusters or PCA scores improves the model and whether multicollinearity is a concern.
+The held-out metrics show how well the model ranks customers who return, rather than only how well it fits the observed sample. The 0.5 cutoff is used for the confusion-matrix metrics because it is easy to interpret, not because it is necessarily the optimal campaign cutoff. A campaign should instead choose a threshold based on contact capacity, expected margin, and treatment cost.
 
-# Limitations and next steps
+Adding the cluster label tests whether the behavioral segmentation contributes predictive information beyond the continuous features. Performance should be judged primarily by ROC-AUC, calibration, and segment-level consistency; a small accuracy gain alone would not justify a more complex campaign policy.
 
-This analysis estimates association, not causal marketing lift. The budget recommendation should be validated with randomized treatment and control groups, tracking incremental purchases, revenue, margin, retention, and cost per incremental retained household. The final analysis should also document assumptions about contact costs, discount costs, and customer-level profitability.
+```{r}
+readr::read_csv("../output/logistic_coefficients.csv", show_col_types = FALSE) |>
+  dplyr::select(term, estimate, p.value, conf.low, conf.high) |>
+  dplyr::mutate(dplyr::across(where(is.numeric), ~ round(.x, 3))) |>
+  knitr::kable(col.names = c("Term", "Odds ratio", "p-value", "95% low", "95% high"))
+```
+
+```{r}
+readr::read_csv("../output/calibration.csv", show_col_types = FALSE) |>
+  dplyr::mutate(dplyr::across(c(mean_predicted_probability, observed_return_rate), ~ round(.x, 3))) |>
+  knitr::kable()
+```
+
+Calibration compares average predicted probability with observed return rate by prediction decile. Large gaps would indicate that the probabilities should be recalibrated before using them to set campaign thresholds or estimate expected value.
+
+The coefficient table should be read as association, not causation. In this model, recency has an odds ratio below one, consistent with customers who have gone longer without purchasing being less likely to return, while product diversity has an odds ratio above one. Correlated measures such as frequency, monetary value, and product breadth can make individual coefficients unstable; PCA scores or regularized models would be reasonable robustness checks.
+
+The cluster-augmented fit also produces a convergence warning because the smallest, highest-return cluster is close to complete separation. This is another reason to use the held-out ranking metrics for campaign prioritization and to treat individual coefficient significance as exploratory rather than definitive.
+
+# Limitations and test design
+
+The data support segmentation and prediction, but not a causal claim that a marketing action will create additional purchases. The budget is therefore a planning allocation with explicit assumptions: growth customers receive the largest experimental share, loyal customers receive efficient protection, and low-value at-risk customers receive low-cost contact.
+
+The implementation should randomly assign eligible customers within each segment to treatment and control. Treatment can receive the proposed offer or communication while control receives the current standard experience. After the campaign, compare incremental retention, revenue, gross margin, and cost per incremental retained household. Report results by segment so a profitable overall effect does not hide harm or wasted spending in a smaller group.
+
+The decision would improve with customer-level gross margin, offer redemption and contact costs, channel reachability, historical campaign exposure, and a longer observation window. Those fields would allow the business to estimate expected incremental profit rather than using spend and return as proxies for value.

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customer Segmentation & Retention</title>
+  <style>
+    :root { --ink:#14213d; --muted:#5d6b82; --accent:#0f766e; --paper:#f6f8fb; --card:#fff; }
+    * { box-sizing:border-box; }
+    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    main { max-width:1100px; margin:0 auto; padding:56px 24px 72px; }
+    .hero { background:linear-gradient(135deg,#14213d,#0f766e); color:white; border-radius:24px; padding:42px; box-shadow:0 18px 45px #14213d22; }
+    h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,4rem); line-height:1.05; letter-spacing:-.04em; }
+    h2 { margin:42px 0 16px; font-size:1.55rem; }
+    .hero p { max-width:760px; margin:0; color:#e5f5f2; font-size:1.08rem; }
+    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; }
+    a.button { display:inline-block; padding:10px 16px; border-radius:999px; background:white; color:var(--ink); text-decoration:none; font-weight:700; }
+    a.button.secondary { background:#ffffff22; color:white; border:1px solid #ffffff66; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
+    .card { background:var(--card); border:1px solid #dfe5ed; border-radius:16px; padding:22px; box-shadow:0 6px 20px #14213d0b; }
+    .metric { font-size:2rem; font-weight:800; color:var(--accent); }
+    .label { color:var(--muted); font-size:.9rem; }
+    table { width:100%; border-collapse:collapse; background:white; border-radius:14px; overflow:hidden; }
+    th,td { padding:12px 14px; text-align:left; border-bottom:1px solid #e8edf3; }
+    th { background:#eaf3f2; }
+    .note { color:var(--muted); }
+    footer { margin-top:40px; color:var(--muted); font-size:.9rem; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="hero">
+    <h1>Customer Segmentation & Retention</h1>
+    <p>Using household purchase behavior, PCA, k-means clustering, and held-out logistic regression to prioritize a $1 million marketing budget.</p>
+    <div class="actions">
+      <a class="button" href="report.html">Read the full report</a>
+      <a class="button secondary" href="https://github.com/Brandonlee-2002/customer-segmentation-retention">View the repository</a>
+    </div>
+  </section>
+
+  <h2>Decision snapshot</h2>
+  <section class="grid">
+    <div class="card"><div class="metric">4</div><div class="label">Actionable customer segments</div></div>
+    <div class="card"><div class="metric">$1M</div><div class="label">Recommended marketing budget</div></div>
+    <div class="card"><div class="metric">80/20</div><div class="label">Stratified train/test evaluation</div></div>
+    <div class="card"><div class="metric">0.826</div><div class="label">Held-out ROC-AUC with clusters</div></div>
+  </section>
+
+  <h2>Recommended allocation</h2>
+  <table>
+    <thead><tr><th>Segment</th><th>Customers</th><th>Return rate</th><th>Allocation</th><th>Action</th></tr></thead>
+    <tbody>
+      <tr><td>Growth-potential regulars</td><td>1,113</td><td>86.2%</td><td>$400,000</td><td>Test bundles and frequency incentives</td></tr>
+      <tr><td>Frequent broad shoppers</td><td>646</td><td>98.5%</td><td>$250,000</td><td>Personalized cross-category loyalty offers</td></tr>
+      <tr><td>High-value loyal shoppers</td><td>169</td><td>99.4%</td><td>$200,000</td><td>Low-discount retention and VIP access</td></tr>
+      <tr><td>At-risk low-engagement shoppers</td><td>400</td><td>58.3%</td><td>$150,000</td><td>Low-cost win-back; suppress expensive discounts</td></tr>
+    </tbody>
+  </table>
+  <p class="note">Predicted return is not incremental lift. The proposed campaign should be evaluated with randomized treatment and control groups within each segment.</p>
+
+  <h2>Project files</h2>
+  <div class="grid">
+    <div class="card"><strong>Report source</strong><p class="note">Quarto source with the complete narrative, tables, model evaluation, and limitations.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/report/project_3_report.qmd">Open QMD source →</a></div>
+    <div class="card"><strong>Analysis pipeline</strong><p class="note">Reproducible R script for feature construction, PCA, clustering, modeling, and allocation.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/analysis/project_3_analysis.R">Open R script →</a></div>
+    <div class="card"><strong>Method note</strong><p class="note">The analysis is observational; campaign effectiveness must be established experimentally.</p><a href="report.html#limitations-and-test-design">Read limitations →</a></div>
+    <div class="card"><strong>AI use log</strong><p class="note">A transparent record of how AI supported analysis, writing, validation, and publishing.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/AI_LOG.md">Read AI log →</a></div>
+  </div>
+  <footer>Project 3 · Customer Segmentation, Retention Modeling, and Marketing Allocation</footer>
+</main>
+</body>
+</html>

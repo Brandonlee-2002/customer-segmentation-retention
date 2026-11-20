@@ -5,7 +5,7 @@ This project uses the **dunnhumby Complete Journey** data to identify customer g
 ## Project structure
 
 - `analysis/project_3_analysis.R` — reproducible analysis pipeline.
-- `report/project_3_report.qmd` — Quarto report scaffold and required narrative.
+- `report/project_3_report.qmd` — completed Quarto report and required narrative.
 - `data/` — local data exports, if needed. The default script loads the `completejourney` R package directly.
 - `output/` — generated tables and figures.
 - `background/` — original project brief supplied for this assignment.
@@ -15,7 +15,7 @@ This project uses the **dunnhumby Complete Journey** data to identify customer g
 1. Install R packages once:
 
    ```r
-   install.packages(c("completejourney", "tidyverse", "factoextra", "quarto"))
+   install.packages(c("completejourney", "tidyverse", "factoextra", "broom", "knitr", "scales"))
    ```
 
 2. Run the analysis:
@@ -34,5 +34,11 @@ The analysis uses January 1–September 30 as the feature period and October 1�
 
 ## Current status
 
-The repository is initialized with the customer-level feature construction, PCA, k-means diagnostics, segmentation profile, logistic regression evaluation, and a transparent budget-allocation framework. Final segment names and spending levels should be reviewed after inspecting the generated diagnostics and model results.
+The completed analysis includes customer-level feature construction, PCA variance and loading interpretation, seeded k-means diagnostics, four business segments, held-out logistic-regression evaluation, calibration and segment-level performance tables, and a non-equal $1,000,000 budget recommendation. The report documents the allocation as a planning framework and proposes randomized treatment/control testing because the observational data do not identify causal marketing lift.
+
+Additional generated model outputs include `calibration.csv`, `model_comparison.csv`, `segment_model_performance.csv`, and `test_model_metrics.csv`.
+
+## Git structure
+
+The `main` branch contains the reproducible analysis, report source, rendered report, generated outputs, and the GitHub Pages site under `docs/`. Analysis code belongs in `analysis/`, report sources and rendered artifacts belong in `report/`, and reproducible tables belong in `output/`. The `.github/workflows/pages.yml` workflow publishes the contents of `docs/` whenever changes are pushed to `main`.
 # customer-segmentation-retention
