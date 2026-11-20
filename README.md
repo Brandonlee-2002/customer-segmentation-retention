@@ -40,5 +40,5 @@ Additional generated model outputs include `calibration.csv`, `model_comparison.
 
 ## Git structure
 
-The `main` branch contains the reproducible analysis, report source, rendered report, generated outputs, and the GitHub Pages site under `docs/`. Analysis code belongs in `analysis/`, report sources and rendered artifacts belong in `report/`, and reproducible tables belong in `output/`. The `.github/workflows/pages.yml` workflow publishes the contents of `docs/` whenever changes are pushed to `main`.
+The `main` branch contains the reproducible analysis, report source, rendered report, generated outputs, and the GitHub Pages landing page at the repository root. Analysis code belongs in `analysis/`, report sources and rendered artifacts belong in `report/`, reproducible tables belong in `output/`, and the static Pages source is also kept under `docs/`.
 # customer-segmentation-retention
