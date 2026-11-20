@@ -1,0 +1,322 @@
+---
+title: "Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation"
+subtitle: "Using PCA, k-means clustering, and logistic regression to make a $1 million marketing decision"
+author: "Math 167R"
+format:
+  html:
+    toc: true
+    code-fold: true
+    theme: cosmo
+execute:
+  echo: true
+  warning: false
+  message: false
+---
+
+# Project overview
+
+You are a data analyst working for a retail company. The company has a large customer base and wants to spend its marketing budget more intelligently.
+
+The company has three related questions:
+
+1. **What kinds of customers do we have?**
+2. **Which customers are likely to return and purchase again?**
+3. **How should we allocate a $1,000,000 marketing budget across those customers?**
+
+Your job is not simply to fit a model. Your job is to move from data to a defensible business recommendation:
+
+> Use customer behavior to discover meaningful groups, predict future return behavior, and recommend how the company should spend its marketing budget.
+
+This project combines unsupervised learning and supervised learning:
+
+- **PCA** summarizes many correlated customer-behavior variables.
+- **K-means clustering** discovers groups of mathematically similar customers.
+- **Segmentation** translates those groups into meaningful business categories and actions.
+- **Logistic regression** estimates each customer's probability of returning.
+- **Marketing allocation** uses the evidence and business logic to distribute the budget.
+
+The most important part of the project is the reasoning between the methods. The computer can calculate principal components and clusters. It cannot decide whether a group should be called “Promotion-Driven Growth Customers” or whether that group deserves 40% of the budget. You must defend those decisions.
+
+# Important steps
+
+While completing this project, you will need to:
+
+- create a customer-level analytical data set from the first 9 months of transaction data and demographic data;
+- construct meaningful behavioral variables such as recency, frequency, monetary value, product data and demographic variables;
+- determine meaningful ways to roll up products by manufacturer_id, department, brand, or others;
+- run a PCA analysis to see if there are meaningful patterns in the data;
+- run a k-means to discover groups of similar customers;
+- create and defend useful segment labels based on PCA and/or k-means as well has your business intuition. 
+- fit and evaluate a logistic regression model for customer return;
+- use predicted probabilities, segments and business intuition to allocate a fixed budget;
+
+# Data set
+
+The data set is the **dunnhumby Complete Journey** data, available in R through the `completejourney` package. It contains household transactions over time, household demographic information, and products.
+
+The unit of analysis for this project should be the **customer or household**, not an individual transaction. You will aggregate the transaction-level data into one row per customer.
+
+```{r}
+#| eval: false
+
+# Install once if necessary
+install.packages(c("completejourney", "tidyverse", "tidymodels", "factoextra"))
+
+library(completejourney)
+library(tidyverse)
+library(tidymodels)
+library(factoextra)
+
+data(demographics)
+data(transactions_sample)
+data(products)
+```
+
+
+# Part 1: Start with the business question
+
+> The company wants to identify customers who are valuable, customers who have growth potential, and customers for whom expensive marketing is unlikely to be worthwhile. The analysis will be used to prioritize a fixed marketing budget.
+
+Define the following:
+
+| Element | Your definition |
+|---|---|
+| Unit of analysis | One household |
+| Observation period | Jan 1 - Sept 30 |
+| Holdout period | Oct 1 - Dec 31 |
+| Outcome | Whether the customer returns during the holdout period |
+
+# Part 2: Build a customer-level data set
+
+## 2.1 Create a time-based outcome
+
+To predict future behavior, separate the data into a **feature period** and a **holdout period**.
+
+For example:
+
+- Use the first part of the transaction history to calculate customer features. (first 9 months)
+- Use the final part of the transaction history to determine whether the customer returned. (last 3 months)
+
+
+Define:
+
+```text
+retained = 1 if the customer made at least one purchase during the holdout period
+retained = 0 otherwise
+```
+
+## 2.2 Recommended customer features
+
+Create a table with one row per household. Possible features include:
+
+| Feature | Meaning | Why it may matter |
+|---|---|---|
+| `recency` | Days since the most recent purchase | Recent customers may be more engaged |
+| `frequency` | Number of transactions | Repeat behavior may indicate loyalty |
+| `monetary` | Total spending | Measures historical customer value |
+| `avg_basket` | Average spending per transaction | Distinguishes large and small purchases |
+| `product_diversity` | Number of distinct products or categories | Measures breadth of engagement |
+| `category_count` | Number of product categories purchased | Helps describe customer interests |
+| `family_size` | Number of people in the house | Helps describe spending size |
+
+# Part 3: PCA—summarize customer behavior
+
+Customer variables are often correlated. Customers who purchase frequently may also spend more, buy more categories, and have more transactions. If we use all of these variables without thinking carefully, we may count the same underlying behavior several times.
+
+PCA does not automatically discover “good customers” or “bad customers.” It creates mathematical axes. You must inspect the loadings and decide what those axes appear to represent. Use that as a basis for interpreting customer segments.
+
+# Part 4: K-means—discover groups of similar customers
+
+K-means assigns customers to `k` groups so that customers within a group are relatively close to one another and customers in different groups are relatively far apart.
+
+In this project, you may run k-means on:
+
+- the standardized original behavioral variables; or
+- a selected number of PCA scores.
+
+Using PCA scores can reduce redundancy and make the groups easier to visualize. However, you must still profile the final clusters using the original customer variables.
+
+## Choose `k` thoughtfully
+
+Do not choose the number of clusters only because a plot looks attractive. Compare several values, such as `k = 2` through `k = 6`, using:
+
+- the elbow method;
+- average silhouette width;
+- cluster size;
+- stability across different random starts; and
+- whether the resulting groups are large enough and actionable enough to use.
+
+A mathematically reasonable cluster solution may still be a poor business segmentation if it creates a tiny group or groups that cannot receive different actions.
+
+# Part 5: From clusters to meaningful customer segments
+
+Suppose PCA, k-means and your intuition produces four groups. You might create labels such as:
+
+| Possible label | Evidence that should support the label | Possible strategy |
+|---|---|---|
+| **VIP loyal customers** | High spending, frequent purchases, recent activity, broad engagement | Retain with recognition, early access, and relevant offers; avoid unnecessary discounts |
+| **Promotion-driven growth customers** | Moderate value, high coupon or discount use, some repeat activity | Test targeted incentives and cross-selling to increase value |
+| **Occasional customers** | Low-to-moderate frequency and spending, limited product breadth | Use low-cost reminders or seasonal campaigns |
+| **Lapsed high-potential customers** | Historically valuable, but high recency and declining activity | Use a carefully targeted win-back campaign |
+
+These are examples, not answers. Your labels must match your actual cluster profiles. A cluster should not be called “VIP” simply because it has the highest return rate; it should also show evidence of high value or strategic importance.
+
+## Segment labels must be defensible
+
+For each segment, report:
+
+- the cluster number;
+- the number and percentage of customers;
+- median or mean recency, frequency, and monetary value;
+- important PCA scores or component descriptions;
+- return rate;
+- the evidence supporting the segment name;
+- the customers' likely needs or behavior; and
+- the proposed marketing action.
+
+
+::: {.callout-tip}
+## The best segment labels are both descriptive and actionable
+
+“Cluster 3” is descriptive only in a mathematical sense. “High-value customers at risk of lapsing” is useful because it describes the evidence and suggests a decision.
+:::
+
+# Part 6: Logistic regression—predict which customers will return
+
+## 6.1 Define the prediction question
+
+The prediction question is:
+
+> Given information available at the end of the feature period, what is the probability that this customer will make at least one purchase during the holdout period?
+
+The response variable is binary:
+
+```text
+retained = 1: customer returned during the holdout period
+retained = 0: customer did not return during the holdout period
+```
+
+## 6.2 Fit and evaluate the model
+
+Report more than accuracy. Include things like:
+
+- a confusion matrix;
+- sensitivity and specificity;
+- precision or positive predictive value;
+- ROC-AUC;
+- a calibration or probability plot; and
+- a discussion of the probability cutoff.
+
+Also examine whether the model performs similarly across your proposed segments. A model can have good overall AUC while performing poorly for a smaller but important segment.
+
+## 6.3 Put in PCA weights or clusters to the regression model to see if it improves the model. Is there multicollinearity?
+
+# Part 7: Allocate the $1,000,000 marketing budget
+
+## 7.1 Should the money be divided equally?
+
+No—not automatically.
+
+An equal allocation assumes that every customer group has the same:
+
+- customer value;
+- probability of returning;
+- responsiveness to marketing;
+- cost to reach;
+- strategic importance; and
+- opportunity for profitable growth.
+
+Those assumptions are unlikely to be true. A better allocation should use the evidence from the analysis and explain the business tradeoffs.
+
+However, do not simply give all the money to customers with the highest predicted return. Those customers may already be likely to return without additional marketing. A high predicted return probability is not the same as a high incremental marketing opportunity.
+
+Come up with your own marketing strategy and defend it:
+- maximize long-term customer value.
+- reduce customer churn.
+- minimize marketing costs.
+
+## 7.2 A reasonable strategic framework
+
+Use your segments to create a marketing plan such as:
+
+| Segment type | Strategic goal | Possible budget logic |
+|---|---|---|
+| High-value loyal | Protect profitable relationships | Maintain meaningful but efficient investment; emphasize loyalty and relevant offers |
+| Middle-value or growth | Increase future value and frequency | Give the largest experimental allocation because these customers may have room to grow |
+| High-value at risk | Prevent valuable customers from lapsing | Fund targeted win-back actions, but measure whether they work |
+| Low-value and unlikely to return | Control costs | Use low-cost or automated communication; minimize expensive outreach |
+
+The middle group often deserves substantial investment because it may have both value and room for improvement. The highest-value group deserves protection, but may not need the largest number of discounts. The lowest-value group should not automatically receive zero marketing; low-cost communication may still be appropriate.
+
+For example, you might assign an initial budget across three strategic tiers:
+
+| Tier | Example allocation | Reasoning |
+|---|---:|---|
+| Protect valuable customers | $300,000 | Preserve profitable relationships and reduce costly lapses |
+| Grow middle customers | $550,000 | Invest where customers have value and room to increase engagement |
+| Low-touch customers | $150,000 | Maintain inexpensive contact while limiting costly outreach |
+| **Total** | **$1,000,000** | |
+
+These amounts are not the answer. They are an example of a non-equal allocation that students must evaluate and revise using their own evidence.
+
+## 7.3 Required budget table
+
+Your report must include a table like the following:
+
+| Segment | Customers | Predicted return rate | Value measure | Marketing action | Allocation | Percent of budget | Justification |
+|---|---:|---:|---:|---|---:|---:|---|
+| Segment 1 | | | | | | | |
+| Segment 2 | | | | | | | |
+| Segment 3 | | | | | | | |
+| Segment 4 | | | | | | | |
+| **Total** | | | | | **$1,000,000** | **100%** | |
+
+Explain:
+
+1. Why each segment received its allocation.
+2. Why the allocation is not equal—or, if you choose equal allocation, what evidence justifies it.
+3. Why the highest predicted-return group did or did not receive the most money.
+4. What marketing action would be used for each group.
+5. What metric would determine whether the campaign was successful.
+6. How you would test whether the spending caused additional purchases.
+
+# Required deliverables
+
+Submit the following:
+
+1. **Quarto report** rendered to HTML.
+2. **R script or R project** containing the analysis code.
+3. **README file** summarizing your project, explaining how to reproduce the analysis, how your git is structured.
+4. **PCA analysis**, including explained variance and loading interpretation.
+5. **K-means analysis**, including the choice of `k`, cluster sizes, and diagnostics.
+6. **Segmentation table**, including labels, evidence, and marketing actions.
+7. **Logistic regression analysis**, including evaluation on held-out data.
+8. **$1 million marketing allocation table** and written justification.
+
+# Suggested report structure
+
+Your report should use the following structure:
+
+1. Executive summary
+2. Marketing strategy and $1 million budget allocation table
+3. Data and customer-level feature construction
+4. PCA and interpretation of customer-behavior dimensions
+5. K-means clustering and selection of `k`
+6. From clusters to meaningful business segments
+7. Logistic regression for future return
+ 
+
+# Questions students should be able to answer
+
+1. What does PC1 represent in your data, and what evidence supports that interpretation?
+2. Why did you choose your value of `k`?
+3. How are your business segments different from the k-means clusters?
+4. Which segment is most valuable? Which segment has the most growth opportunity?
+5. Which customers are most likely to return according to the logistic model?
+6. Why might it be a mistake to spend the most money on customers with the highest predicted return probability?
+7. Why is an equal budget allocation not automatically reasonable?
+8. What assumptions are you making when you recommend your allocation?
+9. What additional information would improve the marketing decision?
+10. What experiment would you run to determine whether the marketing spend caused additional purchases?
+
+The central lesson is that machine learning produces evidence, not decisions. PCA and k-means help reveal structure. Logistic regression helps rank customers by predicted return. The analyst must then use business intuition, financial reasoning, ethical judgment, and clear assumptions to turn those results into a marketing plan.

@@ -1,0 +1,82 @@
+---
+title: "Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation"
+subtitle: "Using PCA, k-means clustering, and logistic regression to make a $1 million marketing decision"
+author: "Math 167R"
+format:
+  html:
+    toc: true
+    code-fold: true
+    theme: cosmo
+execute:
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+source("../analysis/project_3_analysis.R")
+```
+
+# Executive summary
+
+This report will identify meaningful household segments, estimate the probability that each household returns during the holdout period, and recommend a non-equal $1,000,000 marketing allocation. The final recommendation must distinguish predicted return probability from incremental marketing opportunity.
+
+# Marketing strategy and budget allocation
+
+```{r}
+readr::read_csv("../output/budget_allocation_starting_point.csv", show_col_types = FALSE)
+```
+
+The starting allocation above is proportional to segment size. It is intentionally a baseline: the final submission should revise it using customer value, retention risk, growth opportunity, contact cost, and a proposed test-and-control design.
+
+# Data and customer-level feature construction
+
+The unit of analysis is one household. The feature period is the first 75% of the observed transaction window, and the holdout period is the remaining 25%. The outcome `retained` equals 1 when the household makes at least one purchase during the holdout period.
+
+```{r}
+customer_data |> dplyr::summarise(
+  households = dplyr::n(),
+  retention_rate = mean(retained),
+  median_monetary = median(monetary),
+  median_frequency = median(frequency)
+)
+```
+
+# PCA and interpretation of customer-behavior dimensions
+
+```{r}
+readr::read_csv("../output/pca_variance.csv", show_col_types = FALSE)
+readr::read_csv("../output/pca_loadings.csv", show_col_types = FALSE) |> head(10)
+```
+
+Interpret the leading components from the loading table. A defensible interpretation should describe which observed behaviors move together and should not call a component “customer quality” without reference to the actual loadings.
+
+# K-means clustering and selection of `k`
+
+```{r}
+readr::read_csv("../output/cluster_diagnostics.csv", show_col_types = FALSE)
+```
+
+The starter analysis uses four clusters so the report can be developed end-to-end. The final choice of `k` should be defended using diagnostics, cluster size, stability, and whether the groups support different actions.
+
+# Business segments
+
+```{r}
+readr::read_csv("../output/segment_profile.csv", show_col_types = FALSE)
+```
+
+Replace “Cluster 1” through “Cluster 4” with evidence-based labels. For each segment, explain its value, return behavior, likely need, and proposed marketing action.
+
+# Logistic regression for future return
+
+```{r}
+readr::read_csv("../output/model_summary.csv", show_col_types = FALSE)
+readr::read_csv("../output/logistic_coefficients.csv", show_col_types = FALSE)
+readr::read_csv("../output/confusion_matrix.csv", show_col_types = FALSE)
+```
+
+The initial script reports in-sample classification metrics. Before submission, add a true train/test split or cross-validation, ROC-AUC, calibration, and performance by business segment. Explain whether adding clusters or PCA scores improves the model and whether multicollinearity is a concern.
+
+# Limitations and next steps
+
+This analysis estimates association, not causal marketing lift. The budget recommendation should be validated with randomized treatment and control groups, tracking incremental purchases, revenue, margin, retention, and cost per incremental retained household. The final analysis should also document assumptions about contact costs, discount costs, and customer-level profitability.
