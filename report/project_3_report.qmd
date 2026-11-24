@@ -1,7 +1,7 @@
 ---
 title: "Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation"
 subtitle: "Using PCA, k-means clustering, and logistic regression to make a $1 million marketing decision"
-author: "Math 167R"
+author: "Brandon Lee"
 format:
   html:
     toc: true
