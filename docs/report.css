@@ -58,8 +58,9 @@ table {
 }
 
 thead th {
-  color: #fff;
-  background: var(--project-navy) !important;
+  color: var(--project-navy) !important;
+  background: #d9eeeb !important;
+  font-weight: 700;
 }
 
 tbody tr:nth-child(even) {
