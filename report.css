@@ -73,6 +73,20 @@ table thead th a,
   color: var(--project-navy) !important;
 }
 
+/* Quarto's Bootstrap table variables can otherwise reapply the dark theme. */
+html body table.table,
+html body table.table thead,
+html body table.table thead tr,
+html body table.table thead tr th,
+html body table.table thead tr th[style] {
+  --bs-table-bg: #d9eeeb !important;
+  --bs-table-accent-bg: #d9eeeb !important;
+  background-color: #d9eeeb !important;
+  color: #14213d !important;
+  opacity: 1 !important;
+  text-shadow: none !important;
+}
+
 tbody tr:nth-child(even) {
   background: #f0f5f7;
 }
