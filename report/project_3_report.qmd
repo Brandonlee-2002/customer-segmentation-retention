@@ -11,7 +11,7 @@ format:
     fig-responsive: true
     number-sections: true
     embed-resources: true
-    code-tools: true
+    code-tools: false
 execute:
   echo: false
   warning: false
