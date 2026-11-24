@@ -56,7 +56,7 @@ The feature period is January 1–September 30, and the holdout period is Octobe
 
 ## Generated outputs
 
-The pipeline writes customer-level data, PCA variance and loadings, cluster diagnostics, segment profiles, confusion matrices, held-out model comparisons, calibration tables, segment-level model performance, and the budget allocation table to `output/`.
+The pipeline writes customer-level data, PCA variance and loadings, cluster diagnostics, segment profiles, confusion matrices, held-out model comparisons, calibration tables, segment-level model performance, budget allocation and break-even sensitivity tables, plus six report figures to `output/`.
 
 ## Validation and limitations
 

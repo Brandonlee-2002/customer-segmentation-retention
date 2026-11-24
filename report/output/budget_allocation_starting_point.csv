@@ -1,5 +1,5 @@
-segment_label,customers,predicted_return_rate,monetary,marketing_action,allocation,budget_pct,justification
-Frequent broad shoppers,646,0.9845201238390093,118.25999999999999,Personalized cross-category loyalty offers,250000,0.25,"Large, valuable base with very high observed return; protect value efficiently."
-High-value loyal shoppers,169,0.9940828402366864,246.38000000000002,Low-discount retention and VIP access,200000,0.2,Highest value and return; use retention touches rather than broad discounting.
-Growth-potential regulars,1113,0.8616352201257862,33.38,Test targeted bundles and frequency incentives,400000,0.4,Largest group with meaningful room to grow; reserve the largest test allocation.
-At-risk low-engagement shoppers,400,0.5825,6.595,Low-cost win-back; suppress expensive discounts,150000,0.15,Lowest value and return; cap cost while testing inexpensive reactivation.
+segment_label,customers,holdout_return_rate,monetary,marketing_action,allocation,budget_pct,allocation_per_household,assumed_incremental_margin,break_even_retained_households,break_even_rate,justification
+Frequent broad shoppers,646,0.9845201238390093,118.25999999999999,Personalized cross-category loyalty offers,300000,0.3,464.39628482972137,500,600,0.9287925696594427,"Large, valuable base with very high observed return; protect value efficiently."
+High-value loyal shoppers,169,0.9940828402366864,246.38000000000002,Low-discount retention and VIP access,200000,0.2,1183.4319526627219,500,400,2.366863905325444,Highest value and return; use retention touches rather than broad discounting.
+Growth-potential regulars,1113,0.8616352201257862,33.38,Test targeted bundles and frequency incentives,450000,0.45,404.3126684636119,500,900,0.8086253369272237,Largest group with meaningful room to grow; reserve the largest test allocation.
+At-risk low-engagement shoppers,400,0.5825,6.595,Low-cost win-back; suppress expensive discounts,50000,0.05,125,500,100,0.25,Lowest value and return; cap cost while testing inexpensive reactivation.
