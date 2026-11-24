@@ -57,10 +57,20 @@ table {
   box-shadow: 0 .35rem 1.2rem rgba(20, 33, 61, .06);
 }
 
-thead th {
+table thead,
+table thead tr,
+table thead th,
+.table thead,
+.table thead tr,
+.table thead th {
   color: var(--project-navy) !important;
   background: #d9eeeb !important;
   font-weight: 700;
+}
+
+table thead th a,
+.table thead th a {
+  color: var(--project-navy) !important;
 }
 
 tbody tr:nth-child(even) {
