@@ -1,50 +1,77 @@
-# Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation
+# Customer Segmentation & Retention
 
-This project uses the **dunnhumby Complete Journey** data to identify customer groups, predict whether households return during a holdout period, and recommend how to allocate a $1,000,000 marketing budget.
+### Project 3 · Customer analytics, retention modeling, and marketing allocation
+
+[![Report](https://img.shields.io/badge/read-report-0f766e?style=flat-square)](https://brandonlee-2002.github.io/customer-segmentation-retention/)
+[![Source](https://img.shields.io/badge/source-GitHub-14213d?style=flat-square&logo=github)](https://github.com/Brandonlee-2002/customer-segmentation-retention)
+
+This project turns household purchase history into an actionable retention strategy using the dunnhumby Complete Journey data. It combines customer-level feature engineering, PCA, k-means segmentation, held-out logistic regression, and a $1,000,000 marketing allocation framework.
+
+## Start here
+
+Read the [published report](https://brandonlee-2002.github.io/customer-segmentation-retention/) for the executive summary, segment profiles, model evaluation, budget recommendation, and experiment design.
+
+## Decision snapshot
+
+| Decision area | Result |
+|---|---|
+| Customer groups | 4 actionable behavioral segments |
+| Prediction target | Whether a household purchases during the October–December holdout period |
+| Model evaluation | Stratified 80/20 holdout with ROC-AUC, calibration, and segment-level performance |
+| Budget | Non-equal allocation totaling $1,000,000 |
+| Core recommendation | Invest most in growth-potential regulars while protecting high-value loyal shoppers efficiently |
+
+The allocation is a planning recommendation, not a causal estimate of marketing lift. A randomized treatment/control test is required before scaling campaign spend.
 
 ## Project structure
 
-- `analysis/project_3_analysis.R` — reproducible analysis pipeline.
-- `report/project_3_report.qmd` — completed Quarto report and required narrative.
-- `data/` — local data exports, if needed. The default script loads the `completejourney` R package directly.
-- `output/` — generated tables and figures.
-- `background/` — original project brief supplied for this assignment.
+```text
+analysis/       Reproducible R analysis pipeline
+report/         Quarto source and rendered report artifacts
+output/         Generated customer, PCA, cluster, model, and budget tables
+docs/           Static Pages copy
+background/     Assignment brief and supplied reference materials
+AI_LOG.md       Record of AI assistance and validation
+```
 
 ## Reproduce the analysis
 
-1. Install R packages once:
+Install the required R packages once:
 
-   ```r
-   install.packages(c("completejourney", "tidyverse", "factoextra", "broom", "knitr", "scales"))
-   ```
+```r
+install.packages(c(
+  "completejourney", "tidyverse", "factoextra",
+  "broom", "knitr", "scales"
+))
+```
 
-2. Run the analysis:
+Run the analysis and render the report:
 
-   ```sh
-   Rscript analysis/project_3_analysis.R
-   ```
+```sh
+Rscript analysis/project_3_analysis.R
+quarto render report/project_3_report.qmd
+```
 
-3. Render the report:
+The feature period is January 1–September 30, and the holdout period is October 1–December 31. The script loads the Complete Journey data through the `completejourney` R package.
 
-   ```sh
-   quarto render report/project_3_report.qmd
-   ```
+## Generated outputs
 
-The analysis uses January 1–September 30 as the feature period and October 1–December 31 as the holdout period. The exact dates are inferred from the transaction data so the script remains reproducible if the package data are refreshed.
+The pipeline writes customer-level data, PCA variance and loadings, cluster diagnostics, segment profiles, confusion matrices, held-out model comparisons, calibration tables, segment-level model performance, and the budget allocation table to `output/`.
+
+## Validation and limitations
+
+- Behavioral variables are computed before the holdout period to avoid using future purchases as predictors.
+- Clustering uses PCA scores and compares candidate values of `k` using within-cluster error, silhouette width, cluster size, and random-start diagnostics.
+- Model results are evaluated on held-out data rather than only in-sample accuracy.
+- The cluster-augmented logistic model has a documented convergence warning caused by near-separation in the smallest high-return segment.
+- The observational data do not identify incremental marketing lift, margin, contact cost, or profitability.
 
 ## Published project
 
-The landing page and full report are now the same published page:
-
 - [Open the published report](https://brandonlee-2002.github.io/customer-segmentation-retention/)
-
-## Current status
-
-The completed analysis includes customer-level feature construction, PCA variance and loading interpretation, seeded k-means diagnostics, four business segments, held-out logistic-regression evaluation, calibration and segment-level performance tables, and a non-equal $1,000,000 budget recommendation. The report documents the allocation as a planning framework and proposes randomized treatment/control testing because the observational data do not identify causal marketing lift.
-
-Additional generated model outputs include `calibration.csv`, `model_comparison.csv`, `segment_model_performance.csv`, and `test_model_metrics.csv`.
+- [View the source repository](https://github.com/Brandonlee-2002/customer-segmentation-retention)
+- [Read the AI use log](AI_LOG.md)
 
 ## Git structure
 
-The `main` branch contains the reproducible analysis, report source, rendered report, generated outputs, and the GitHub Pages landing page at the repository root. Analysis code belongs in `analysis/`, report sources and rendered artifacts belong in `report/`, reproducible tables belong in `output/`, and the static Pages source is also kept under `docs/`.
-# customer-segmentation-retention
+The `main` branch contains the analysis, report source, generated outputs, and the published Pages artifacts. Changes to the analysis are made in `analysis/`; report writing belongs in `report/project_3_report.qmd`; reproducible tables belong in `output/`; and the root `index.html` is the Pages entry point. The current project state is captured in the Git history.
