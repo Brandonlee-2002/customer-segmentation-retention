@@ -1,72 +1,1381 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Customer Segmentation & Retention</title>
-  <style>
-    :root { --ink:#14213d; --muted:#5d6b82; --accent:#0f766e; --paper:#f6f8fb; --card:#fff; }
-    * { box-sizing:border-box; }
-    body { margin:0; color:var(--ink); background:var(--paper); font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    main { max-width:1100px; margin:0 auto; padding:56px 24px 72px; }
-    .hero { background:linear-gradient(135deg,#14213d,#0f766e); color:white; border-radius:24px; padding:42px; box-shadow:0 18px 45px #14213d22; }
-    h1 { margin:0 0 10px; font-size:clamp(2rem,5vw,4rem); line-height:1.05; letter-spacing:-.04em; }
-    h2 { margin:42px 0 16px; font-size:1.55rem; }
-    .hero p { max-width:760px; margin:0; color:#e5f5f2; font-size:1.08rem; }
-    .actions { display:flex; gap:12px; flex-wrap:wrap; margin-top:26px; }
-    a.button { display:inline-block; padding:10px 16px; border-radius:999px; background:white; color:var(--ink); text-decoration:none; font-weight:700; }
-    a.button.secondary { background:#ffffff22; color:white; border:1px solid #ffffff66; }
-    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; }
-    .card { background:var(--card); border:1px solid #dfe5ed; border-radius:16px; padding:22px; box-shadow:0 6px 20px #14213d0b; }
-    .metric { font-size:2rem; font-weight:800; color:var(--accent); }
-    .label { color:var(--muted); font-size:.9rem; }
-    table { width:100%; border-collapse:collapse; background:white; border-radius:14px; overflow:hidden; }
-    th,td { padding:12px 14px; text-align:left; border-bottom:1px solid #e8edf3; }
-    th { background:#eaf3f2; }
-    .note { color:var(--muted); }
-    footer { margin-top:40px; color:var(--muted); font-size:.9rem; }
-  </style>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Math 167R">
+
+<title>Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="project_3_report_files/libs/clipboard/clipboard.min.js"></script>
+<script src="project_3_report_files/libs/quarto-html/quarto.js" type="module"></script>
+<script src="project_3_report_files/libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="project_3_report_files/libs/quarto-html/popper.min.js"></script>
+<script src="project_3_report_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="project_3_report_files/libs/quarto-html/anchor.min.js"></script>
+<link href="project_3_report_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="project_3_report_files/libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="project_3_report_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="project_3_report_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="project_3_report_files/libs/bootstrap/bootstrap-c2e55264ed47ce3b2e0326a2269f9400.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+
+
 </head>
-<body>
-<main>
-  <section class="hero">
-    <h1>Customer Segmentation & Retention</h1>
-    <p>Using household purchase behavior, PCA, k-means clustering, and held-out logistic regression to prioritize a $1 million marketing budget.</p>
-    <div class="actions">
-      <a class="button" href="report.html">Read the full report</a>
-      <a class="button secondary" href="https://github.com/Brandonlee-2002/customer-segmentation-retention">View source code</a>
-      <a class="button secondary" href="https://github.com/Brandonlee-2002/customer-segmentation-retention">View the repository</a>
-    </div>
-  </section>
 
-  <h2>Decision snapshot</h2>
-  <section class="grid">
-    <div class="card"><div class="metric">4</div><div class="label">Actionable customer segments</div></div>
-    <div class="card"><div class="metric">$1M</div><div class="label">Recommended marketing budget</div></div>
-    <div class="card"><div class="metric">80/20</div><div class="label">Stratified train/test evaluation</div></div>
-    <div class="card"><div class="metric">0.826</div><div class="label">Held-out ROC-AUC with clusters</div></div>
-  </section>
+<body class="quarto-light">
 
-  <h2>Recommended allocation</h2>
-  <table>
-    <thead><tr><th>Segment</th><th>Customers</th><th>Return rate</th><th>Allocation</th><th>Action</th></tr></thead>
-    <tbody>
-      <tr><td>Growth-potential regulars</td><td>1,113</td><td>86.2%</td><td>$400,000</td><td>Test bundles and frequency incentives</td></tr>
-      <tr><td>Frequent broad shoppers</td><td>646</td><td>98.5%</td><td>$250,000</td><td>Personalized cross-category loyalty offers</td></tr>
-      <tr><td>High-value loyal shoppers</td><td>169</td><td>99.4%</td><td>$200,000</td><td>Low-discount retention and VIP access</td></tr>
-      <tr><td>At-risk low-engagement shoppers</td><td>400</td><td>58.3%</td><td>$150,000</td><td>Low-cost win-back; suppress expensive discounts</td></tr>
-    </tbody>
-  </table>
-  <p class="note">Predicted return is not incremental lift. The proposed campaign should be evaluated with randomized treatment and control groups within each segment.</p>
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+<div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+  <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#executive-summary" id="toc-executive-summary" class="nav-link active" data-scroll-target="#executive-summary">Executive summary</a></li>
+  <li><a href="#marketing-strategy-and-1-million-budget-allocation" id="toc-marketing-strategy-and-1-million-budget-allocation" class="nav-link" data-scroll-target="#marketing-strategy-and-1-million-budget-allocation">Marketing strategy and $1 million budget allocation</a></li>
+  <li><a href="#data-and-customer-level-feature-construction" id="toc-data-and-customer-level-feature-construction" class="nav-link" data-scroll-target="#data-and-customer-level-feature-construction">Data and customer-level feature construction</a></li>
+  <li><a href="#pca-and-interpretation-of-customer-behavior-dimensions" id="toc-pca-and-interpretation-of-customer-behavior-dimensions" class="nav-link" data-scroll-target="#pca-and-interpretation-of-customer-behavior-dimensions">PCA and interpretation of customer-behavior dimensions</a></li>
+  <li><a href="#k-means-clustering-and-choice-of-k" id="toc-k-means-clustering-and-choice-of-k" class="nav-link" data-scroll-target="#k-means-clustering-and-choice-of-k">K-means clustering and choice of <code>k</code></a></li>
+  <li><a href="#business-segments" id="toc-business-segments" class="nav-link" data-scroll-target="#business-segments">Business segments</a></li>
+  <li><a href="#logistic-regression-for-future-return" id="toc-logistic-regression-for-future-return" class="nav-link" data-scroll-target="#logistic-regression-for-future-return">Logistic regression for future return</a></li>
+  <li><a href="#limitations-and-test-design" id="toc-limitations-and-test-design" class="nav-link" data-scroll-target="#limitations-and-test-design">Limitations and test design</a></li>
+  </ul>
+</nav>
+</div>
+<main class="content" id="quarto-document-content">
 
-  <h2>Project files</h2>
-  <div class="grid">
-    <div class="card"><strong>Report source</strong><p class="note">Quarto source with the complete narrative, tables, model evaluation, and limitations.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/report/project_3_report.qmd">Open QMD source →</a></div>
-    <div class="card"><strong>Analysis pipeline</strong><p class="note">Reproducible R script for feature construction, PCA, clustering, modeling, and allocation.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/analysis/project_3_analysis.R">Open R script →</a></div>
-    <div class="card"><strong>Method note</strong><p class="note">The analysis is observational; campaign effectiveness must be established experimentally.</p><a href="report.html#limitations-and-test-design">Read limitations →</a></div>
-    <div class="card"><strong>AI use log</strong><p class="note">A transparent record of how AI supported analysis, writing, validation, and publishing.</p><a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/AI_LOG.md">Read AI log →</a></div>
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation</h1>
+<p class="subtitle lead">Using PCA, k-means clustering, and logistic regression to make a $1 million marketing decision</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Math 167R </p>
+          </div>
   </div>
-  <footer>Project 3 · Customer Segmentation, Retention Modeling, and Marketing Allocation</footer>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"../analysis/project_3_analysis.R"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+</div>
+<section id="executive-summary" class="level1">
+<h1>Executive summary</h1>
+<p><strong>Project links:</strong> <a href="https://github.com/Brandonlee-2002/customer-segmentation-retention">source code</a> · <a href="https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/AI_LOG.md">AI use log</a></p>
+<p>This analysis uses household purchase behavior from January 1 through September 30, 2017 to segment customers and predict whether they purchase again during the October 1 through December 31 holdout period. There are 2328 households in the analysis, and the observed holdout return rate is 85.7%.</p>
+<p>The analysis identifies four actionable groups. High-value loyal shoppers have the greatest observed value and return rate, but they do not automatically receive the largest budget because many are likely to return without an expensive intervention. The largest experimental allocation goes to growth-potential regulars, who have substantial value and a lower return rate than the two most active groups. The proposed allocation is deliberately non-equal and totals $1,000,000.</p>
+<p>This is a prioritization framework, not a causal estimate. The recommended campaign must use treatment and control groups to measure incremental purchases, revenue, margin, and retention.</p>
+</section>
+<section id="marketing-strategy-and-1-million-budget-allocation" class="level1">
+<h1>Marketing strategy and $1 million budget allocation</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>budget <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/budget_allocation_starting_point.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>budget_display <span class="ot">&lt;-</span> budget <span class="sc">|&gt;</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">allocation =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(allocation, <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">budget_pct =</span> scales<span class="sc">::</span><span class="fu">percent</span>(budget_pct, <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">predicted_return_rate =</span> scales<span class="sc">::</span><span class="fu">percent</span>(predicted_return_rate, <span class="at">accuracy =</span> <span class="fl">0.1</span>),</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">monetary =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(monetary, <span class="at">accuracy =</span> <span class="fl">0.01</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>budget_total <span class="ot">&lt;-</span> tibble<span class="sc">::</span><span class="fu">tibble</span>(</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">segment_label =</span> <span class="st">"TOTAL"</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">customers =</span> <span class="fu">sum</span>(budget<span class="sc">$</span>customers),</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">predicted_return_rate =</span> <span class="st">"—"</span>,</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">monetary =</span> <span class="st">"—"</span>,</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  <span class="at">marketing_action =</span> <span class="st">"—"</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  <span class="at">allocation =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(<span class="fu">sum</span>(budget<span class="sc">$</span>allocation), <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="at">budget_pct =</span> scales<span class="sc">::</span><span class="fu">percent</span>(<span class="fu">sum</span>(budget<span class="sc">$</span>budget_pct), <span class="at">accuracy =</span> <span class="dv">1</span>),</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  <span class="at">justification =</span> <span class="st">"Full proposed budget"</span></span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>dplyr<span class="sc">::</span><span class="fu">bind_rows</span>(budget_display, budget_total) <span class="sc">|&gt;</span></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Segment"</span>, <span class="st">"Customers"</span>, <span class="st">"Predicted return"</span>, <span class="st">"Median feature-period spend"</span>, <span class="st">"Marketing action"</span>, <span class="st">"Allocation"</span>, <span class="st">"Budget"</span>, <span class="st">"Justification"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 4%">
+<col style="width: 7%">
+<col style="width: 11%">
+<col style="width: 20%">
+<col style="width: 4%">
+<col style="width: 2%">
+<col style="width: 34%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Segment</th>
+<th style="text-align: right;">Customers</th>
+<th style="text-align: left;">Predicted return</th>
+<th style="text-align: left;">Median feature-period spend</th>
+<th style="text-align: left;">Marketing action</th>
+<th style="text-align: left;">Allocation</th>
+<th style="text-align: left;">Budget</th>
+<th style="text-align: left;">Justification</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Frequent broad shoppers</td>
+<td style="text-align: right;">646</td>
+<td style="text-align: left;">98.5%</td>
+<td style="text-align: left;">$118.26</td>
+<td style="text-align: left;">Personalized cross-category loyalty offers</td>
+<td style="text-align: left;">$250,000</td>
+<td style="text-align: left;">25%</td>
+<td style="text-align: left;">Large, valuable base with very high observed return; protect value efficiently.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-value loyal shoppers</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: left;">99.4%</td>
+<td style="text-align: left;">$246.38</td>
+<td style="text-align: left;">Low-discount retention and VIP access</td>
+<td style="text-align: left;">$200,000</td>
+<td style="text-align: left;">20%</td>
+<td style="text-align: left;">Highest value and return; use retention touches rather than broad discounting.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Growth-potential regulars</td>
+<td style="text-align: right;">1113</td>
+<td style="text-align: left;">86.2%</td>
+<td style="text-align: left;">$33.38</td>
+<td style="text-align: left;">Test targeted bundles and frequency incentives</td>
+<td style="text-align: left;">$400,000</td>
+<td style="text-align: left;">40%</td>
+<td style="text-align: left;">Largest group with meaningful room to grow; reserve the largest test allocation.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">At-risk low-engagement shoppers</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: left;">58.2%</td>
+<td style="text-align: left;">$6.60</td>
+<td style="text-align: left;">Low-cost win-back; suppress expensive discounts</td>
+<td style="text-align: left;">$150,000</td>
+<td style="text-align: left;">15%</td>
+<td style="text-align: left;">Lowest value and return; cap cost while testing inexpensive reactivation.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">TOTAL</td>
+<td style="text-align: right;">2328</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">—</td>
+<td style="text-align: left;">$1,000,000</td>
+<td style="text-align: left;">100%</td>
+<td style="text-align: left;">Full proposed budget</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The allocation logic is:</p>
+<ul>
+<li><strong>40% ($400,000) to growth-potential regulars:</strong> the largest segment has moderate value and an observed return rate below the two most active groups, creating room for targeted frequency and basket-building tests.</li>
+<li><strong>25% ($250,000) to frequent broad shoppers:</strong> this is a large, valuable group with a very high return rate. The action emphasizes relevant cross-category offers rather than indiscriminate discounts.</li>
+<li><strong>20% ($200,000) to high-value loyal shoppers:</strong> this group has the highest median spend and return rate. Retention touches and VIP access protect value while limiting unnecessary discount cost.</li>
+<li><strong>15% ($150,000) to at-risk low-engagement shoppers:</strong> this group has the lowest spend and return rate. Low-cost win-back communication is appropriate; expensive incentives should be tested before scaling.</li>
+</ul>
+<p>Success should be measured against a holdout control group using incremental retained households, incremental revenue and margin, cost per incremental retained household, and return on marketing spend. Predicted return probability is not the same as incremental lift, so the highest-probability group should not automatically receive the most money.</p>
+</section>
+<section id="data-and-customer-level-feature-construction" class="level1">
+<h1>Data and customer-level feature construction</h1>
+<p>The unit of analysis is one household. The feature period contains each household’s recency, purchase frequency, spending, basket size, product diversity, category and brand breadth, and coupon usage. The binary outcome <code>retained</code> equals 1 when the household makes at least one purchase during the holdout period.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>customer_data <span class="sc">|&gt;</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarise</span>(</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">households =</span> dplyr<span class="sc">::</span><span class="fu">n</span>(),</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">retention_rate =</span> <span class="fu">mean</span>(retained),</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_monetary =</span> <span class="fu">median</span>(monetary),</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">median_frequency =</span> <span class="fu">median</span>(frequency)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">retention_rate =</span> scales<span class="sc">::</span><span class="fu">percent</span>(retention_rate, <span class="at">accuracy =</span> <span class="fl">0.1</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">households</th>
+<th style="text-align: left;">retention_rate</th>
+<th style="text-align: right;">median_monetary</th>
+<th style="text-align: right;">median_frequency</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2328</td>
+<td style="text-align: left;">85.7%</td>
+<td style="text-align: right;">47.615</td>
+<td style="text-align: right;">11</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The time-based split prevents future purchases from being used as predictors of the same future outcome. Demographic fields are retained in the customer table for possible future targeting, but the initial model focuses on observed behavior and cluster membership.</p>
+</section>
+<section id="pca-and-interpretation-of-customer-behavior-dimensions" class="level1">
+<h1>PCA and interpretation of customer-behavior dimensions</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pca_variance <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/pca_variance.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pca_variance <span class="sc">|&gt;</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">slice_head</span>(<span class="at">n =</span> <span class="dv">5</span>) <span class="sc">|&gt;</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(proportion, cumulative), <span class="sc">~</span> scales<span class="sc">::</span><span class="fu">percent</span>(.x, <span class="at">accuracy =</span> <span class="fl">0.1</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">component</th>
+<th style="text-align: right;">variance</th>
+<th style="text-align: left;">proportion</th>
+<th style="text-align: left;">cumulative</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">PC1</td>
+<td style="text-align: right;">5.2372275</td>
+<td style="text-align: left;">58.2%</td>
+<td style="text-align: left;">58.2%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC2</td>
+<td style="text-align: right;">1.0359958</td>
+<td style="text-align: left;">11.5%</td>
+<td style="text-align: left;">69.7%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC3</td>
+<td style="text-align: right;">0.9050116</td>
+<td style="text-align: left;">10.1%</td>
+<td style="text-align: left;">79.8%</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">PC4</td>
+<td style="text-align: right;">0.8531006</td>
+<td style="text-align: left;">9.5%</td>
+<td style="text-align: left;">89.2%</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">PC5</td>
+<td style="text-align: right;">0.5464881</td>
+<td style="text-align: left;">6.1%</td>
+<td style="text-align: left;">95.3%</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/pca_loadings.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(feature, PC1, PC2, PC3) <span class="sc">|&gt;</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">3</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">feature</th>
+<th style="text-align: right;">PC1</th>
+<th style="text-align: right;">PC2</th>
+<th style="text-align: right;">PC3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">recency</td>
+<td style="text-align: right;">0.247</td>
+<td style="text-align: right;">-0.235</td>
+<td style="text-align: right;">0.151</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">frequency</td>
+<td style="text-align: right;">-0.405</td>
+<td style="text-align: right;">0.060</td>
+<td style="text-align: right;">0.260</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">monetary</td>
+<td style="text-align: right;">-0.403</td>
+<td style="text-align: right;">-0.228</td>
+<td style="text-align: right;">0.132</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">avg_basket</td>
+<td style="text-align: right;">-0.103</td>
+<td style="text-align: right;">-0.842</td>
+<td style="text-align: right;">-0.448</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">product_diversity</td>
+<td style="text-align: right;">-0.418</td>
+<td style="text-align: right;">-0.028</td>
+<td style="text-align: right;">0.202</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">category_count</td>
+<td style="text-align: right;">-0.391</td>
+<td style="text-align: right;">-0.004</td>
+<td style="text-align: right;">0.028</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">manufacturer_count</td>
+<td style="text-align: right;">-0.418</td>
+<td style="text-align: right;">-0.053</td>
+<td style="text-align: right;">0.167</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">brand_count</td>
+<td style="text-align: right;">-0.252</td>
+<td style="text-align: right;">0.351</td>
+<td style="text-align: right;">-0.487</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">coupon_transactions</td>
+<td style="text-align: right;">-0.190</td>
+<td style="text-align: right;">0.229</td>
+<td style="text-align: right;">-0.620</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>PC1 explains 58.2% of standardized behavioral variation and is primarily a breadth-and-activity axis: frequency, monetary value, product diversity, category breadth, and manufacturer breadth have the largest negative loadings, while recency is smaller and positive. The sign of a principal component is arbitrary; the important evidence is which variables move together.</p>
+<p>PC2 explains 11.5% and is dominated by average basket size, with smaller contributions from brand breadth and recency. PC3 explains 10.1% and contrasts coupon activity and basket size with broader spending behavior. The first three components explain approximately 79.8% of the variation, so PCA is useful for clustering while the original variables remain necessary for business interpretation.</p>
+</section>
+<section id="k-means-clustering-and-choice-of-k" class="level1">
+<h1>K-means clustering and choice of <code>k</code></h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/cluster_diagnostics.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">digits =</span> <span class="dv">1</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 2%">
+<col style="width: 14%">
+<col style="width: 14%">
+<col style="width: 16%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">k</th>
+<th style="text-align: right;">total_withinss</th>
+<th style="text-align: right;">avg_silhouette</th>
+<th style="text-align: right;">min_cluster_size</th>
+<th style="text-align: right;">stability_min_cluster_size</th>
+<th style="text-align: right;">stability_max_cluster_size</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">12134.6</td>
+<td style="text-align: right;">0.4</td>
+<td style="text-align: right;">735</td>
+<td style="text-align: right;">735</td>
+<td style="text-align: right;">735</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">9625.5</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">474</td>
+<td style="text-align: right;">474</td>
+<td style="text-align: right;">474</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">8042.5</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">220</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">7123.4</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">138</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">6383.6</td>
+<td style="text-align: right;">0.3</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">42</td>
+<td style="text-align: right;">138</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The final choice is <strong>k = 4</strong>. Increasing k reduces within-cluster sum of squares, but the improvement becomes less useful from a business perspective: k = 5 and k = 6 create smaller groups without adding a clearly distinct action in the available profile. The average silhouette width provides a separation check, while the stability columns show the range of smallest-cluster sizes across ten random starts. The four-cluster solution has group sizes of 169, 400, 646, and 1,113 households, so every group is large enough to target and evaluate. The four groups also separate naturally by recency, frequency, spending, breadth, and PCA position, which supports distinct marketing actions.</p>
+</section>
+<section id="business-segments" class="level1">
+<h1>Business segments</h1>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>profiles <span class="ot">&lt;-</span> readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/segment_profile.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">segment =</span> dplyr<span class="sc">::</span><span class="fu">recode</span>(<span class="fu">as.character</span>(cluster),</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">1</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Frequent broad shoppers"</span>,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">2</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"High-value loyal shoppers"</span>,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">3</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"Growth-potential regulars"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>      <span class="st">`</span><span class="at">4</span><span class="st">`</span> <span class="ot">=</span> <span class="st">"At-risk low-engagement shoppers"</span>),</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">return_rate =</span> scales<span class="sc">::</span><span class="fu">percent</span>(predicted_return_rate, <span class="at">accuracy =</span> <span class="fl">0.1</span>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">left_join</span>(budget <span class="sc">|&gt;</span> dplyr<span class="sc">::</span><span class="fu">select</span>(<span class="at">segment =</span> segment_label, marketing_action), <span class="at">by =</span> <span class="st">"segment"</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(segment, customers, customer_pct, recency, frequency, monetary, avg_basket, product_diversity, PC1, PC2, return_rate, marketing_action)</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>profiles <span class="sc">|&gt;</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(<span class="at">customer_pct =</span> scales<span class="sc">::</span><span class="fu">percent</span>(customer_pct, <span class="at">accuracy =</span> <span class="fl">0.1</span>), <span class="at">monetary =</span> scales<span class="sc">::</span><span class="fu">dollar</span>(monetary, <span class="at">accuracy =</span> <span class="fl">0.01</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Segment"</span>, <span class="st">"Customers"</span>, <span class="st">"% of customers"</span>, <span class="st">"Recency"</span>, <span class="st">"Frequency"</span>, <span class="st">"Median spend"</span>, <span class="st">"Avg. basket"</span>, <span class="st">"Products"</span>, <span class="st">"Median PC1"</span>, <span class="st">"Median PC2"</span>, <span class="st">"Return rate"</span>, <span class="st">"Marketing action"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 16%">
+<col style="width: 5%">
+<col style="width: 7%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 6%">
+<col style="width: 4%">
+<col style="width: 5%">
+<col style="width: 5%">
+<col style="width: 6%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">Segment</th>
+<th style="text-align: right;">Customers</th>
+<th style="text-align: left;">% of customers</th>
+<th style="text-align: right;">Recency</th>
+<th style="text-align: right;">Frequency</th>
+<th style="text-align: left;">Median spend</th>
+<th style="text-align: right;">Avg. basket</th>
+<th style="text-align: right;">Products</th>
+<th style="text-align: right;">Median PC1</th>
+<th style="text-align: right;">Median PC2</th>
+<th style="text-align: left;">Return rate</th>
+<th style="text-align: left;">Marketing action</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Frequent broad shoppers</td>
+<td style="text-align: right;">646</td>
+<td style="text-align: left;">27.7%</td>
+<td style="text-align: right;">7.0</td>
+<td style="text-align: right;">23</td>
+<td style="text-align: left;">$118.26</td>
+<td style="text-align: right;">5.098929</td>
+<td style="text-align: right;">35</td>
+<td style="text-align: right;">-1.6095508</td>
+<td style="text-align: right;">-0.0556313</td>
+<td style="text-align: left;">98.5%</td>
+<td style="text-align: left;">Personalized cross-category loyalty offers</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">High-value loyal shoppers</td>
+<td style="text-align: right;">169</td>
+<td style="text-align: left;">7.3%</td>
+<td style="text-align: right;">3.0</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: left;">$246.38</td>
+<td style="text-align: right;">5.372429</td>
+<td style="text-align: right;">71</td>
+<td style="text-align: right;">-4.9728605</td>
+<td style="text-align: right;">-0.0990457</td>
+<td style="text-align: left;">99.4%</td>
+<td style="text-align: left;">Low-discount retention and VIP access</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Growth-potential regulars</td>
+<td style="text-align: right;">1113</td>
+<td style="text-align: left;">47.8%</td>
+<td style="text-align: right;">21.0</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">$33.38</td>
+<td style="text-align: right;">3.863333</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">0.8457536</td>
+<td style="text-align: right;">0.4481278</td>
+<td style="text-align: left;">86.2%</td>
+<td style="text-align: left;">Test targeted bundles and frequency incentives</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">At-risk low-engagement shoppers</td>
+<td style="text-align: right;">400</td>
+<td style="text-align: left;">17.2%</td>
+<td style="text-align: right;">121.5</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: left;">$6.60</td>
+<td style="text-align: right;">3.185000</td>
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">2.7622217</td>
+<td style="text-align: right;">-0.3298183</td>
+<td style="text-align: left;">58.2%</td>
+<td style="text-align: left;">Low-cost win-back; suppress expensive discounts</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><strong>Frequent broad shoppers (Cluster 1)</strong> have a median of 23 baskets, spend a median of $118.26, and return at an observed rate of 98.5%. They are active and broad shoppers, so personalized cross-category recommendations and loyalty benefits are more appropriate than blanket discounts.</p>
+<p><strong>High-value loyal shoppers (Cluster 2)</strong> are the smallest group at 169 households but have the strongest profile: 46 baskets, median spend of $246.38, 71 products, and a 99.4% observed return rate. Their strategy is value protection—relevant access, early offers, and service—rather than paying customers to do what they already tend to do.</p>
+<p><strong>Growth-potential regulars (Cluster 3)</strong> are the largest group at 1,113 households. They have 8 baskets, median spend of $33.38, and an 86.2% return rate. Their scale, moderate engagement, and room to increase frequency make them the best segment for controlled bundle and frequency-incentive experiments.</p>
+<p><strong>At-risk low-engagement shoppers (Cluster 4)</strong> have median recency of 121.5 days, only 2 baskets, median spend of $6.60, and a 58.3% return rate. They should receive inexpensive automated win-back communication first. Higher-cost discounts should be reserved for randomized tests that demonstrate incremental value.</p>
+<p>The cluster numbers are mathematical identifiers; the business labels are translations of those clusters using the original behavior measures and PCA position. In other words, the business segments do not create a second partition of the customers—they make the k-means groups understandable and actionable. The PCA columns in the table provide an additional compact description of each group’s position in the behavioral space.</p>
+</section>
+<section id="logistic-regression-for-future-return" class="level1">
+<h1>Logistic regression for future return</h1>
+<p>The model predicts holdout return using behavior variables and the four-cluster label. The initial in-sample confusion matrix is retained for transparency, but the primary evaluation below uses a stratified 80/20 holdout split.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/model_comparison.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(accuracy, sensitivity, specificity, precision, roc_auc), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 35%">
+<col style="width: 10%">
+<col style="width: 13%">
+<col style="width: 13%">
+<col style="width: 11%">
+<col style="width: 8%">
+<col style="width: 7%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">model</th>
+<th style="text-align: right;">accuracy</th>
+<th style="text-align: right;">sensitivity</th>
+<th style="text-align: right;">specificity</th>
+<th style="text-align: right;">precision</th>
+<th style="text-align: right;">roc_auc</th>
+<th style="text-align: right;">cutoff</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Behavior variables only</td>
+<td style="text-align: right;">0.854</td>
+<td style="text-align: right;">0.965</td>
+<td style="text-align: right;">0.194</td>
+<td style="text-align: right;">0.877</td>
+<td style="text-align: right;">0.827</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Behavior variables plus cluster</td>
+<td style="text-align: right;">0.859</td>
+<td style="text-align: right;">0.965</td>
+<td style="text-align: right;">0.224</td>
+<td style="text-align: right;">0.881</td>
+<td style="text-align: right;">0.826</td>
+<td style="text-align: right;">0.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/confusion_matrix.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: right;">retained</th>
+<th style="text-align: right;">predicted_class</th>
+<th style="text-align: right;">n</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">58</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">274</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">57</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">1939</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/segment_model_performance.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(actual_return_rate, mean_predicted_probability, roc_auc), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 11%">
+<col style="width: 13%">
+<col style="width: 26%">
+<col style="width: 37%">
+<col style="width: 11%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">cluster</th>
+<th style="text-align: right;">customers</th>
+<th style="text-align: right;">actual_return_rate</th>
+<th style="text-align: right;">mean_predicted_probability</th>
+<th style="text-align: right;">roc_auc</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">126</td>
+<td style="text-align: right;">0.992</td>
+<td style="text-align: right;">0.984</td>
+<td style="text-align: right;">0.808</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">33</td>
+<td style="text-align: right;">0.970</td>
+<td style="text-align: right;">1.000</td>
+<td style="text-align: right;">0.312</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">227</td>
+<td style="text-align: right;">0.855</td>
+<td style="text-align: right;">0.867</td>
+<td style="text-align: right;">0.707</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">81</td>
+<td style="text-align: right;">0.605</td>
+<td style="text-align: right;">0.551</td>
+<td style="text-align: right;">0.649</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The held-out metrics show how well the model ranks customers who return, rather than only how well it fits the observed sample. The 0.5 cutoff is used for the confusion-matrix metrics because it is easy to interpret, not because it is necessarily the optimal campaign cutoff. A campaign should instead choose a threshold based on contact capacity, expected margin, and treatment cost.</p>
+<p>Adding the cluster label tests whether the behavioral segmentation contributes predictive information beyond the continuous features. Performance should be judged primarily by ROC-AUC, calibration, and segment-level consistency; a small accuracy gain alone would not justify a more complex campaign policy.</p>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/logistic_coefficients.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">select</span>(term, estimate, p.value, conf.low, conf.high) <span class="sc">|&gt;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">where</span>(is.numeric), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>(<span class="at">col.names =</span> <span class="fu">c</span>(<span class="st">"Term"</span>, <span class="st">"Odds ratio"</span>, <span class="st">"p-value"</span>, <span class="st">"95% low"</span>, <span class="st">"95% high"</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;">Term</th>
+<th style="text-align: right;">Odds ratio</th>
+<th style="text-align: right;">p-value</th>
+<th style="text-align: right;">95% low</th>
+<th style="text-align: right;">95% high</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">(Intercept)</td>
+<td style="text-align: right;">5.136</td>
+<td style="text-align: right;">0.004</td>
+<td style="text-align: right;">1.721</td>
+<td style="text-align: right;">16.021</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">recency</td>
+<td style="text-align: right;">0.994</td>
+<td style="text-align: right;">0.000</td>
+<td style="text-align: right;">0.991</td>
+<td style="text-align: right;">0.996</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">frequency</td>
+<td style="text-align: right;">1.006</td>
+<td style="text-align: right;">0.879</td>
+<td style="text-align: right;">0.938</td>
+<td style="text-align: right;">1.081</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">monetary</td>
+<td style="text-align: right;">1.004</td>
+<td style="text-align: right;">0.477</td>
+<td style="text-align: right;">0.993</td>
+<td style="text-align: right;">1.017</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">avg_basket</td>
+<td style="text-align: right;">0.952</td>
+<td style="text-align: right;">0.047</td>
+<td style="text-align: right;">0.903</td>
+<td style="text-align: right;">0.997</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">product_diversity</td>
+<td style="text-align: right;">1.063</td>
+<td style="text-align: right;">0.019</td>
+<td style="text-align: right;">1.011</td>
+<td style="text-align: right;">1.120</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">category_count</td>
+<td style="text-align: right;">1.032</td>
+<td style="text-align: right;">0.658</td>
+<td style="text-align: right;">0.898</td>
+<td style="text-align: right;">1.186</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">coupon_transactions</td>
+<td style="text-align: right;">1.174</td>
+<td style="text-align: right;">0.389</td>
+<td style="text-align: right;">0.844</td>
+<td style="text-align: right;">1.763</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cluster2</td>
+<td style="text-align: right;">0.151</td>
+<td style="text-align: right;">0.113</td>
+<td style="text-align: right;">0.020</td>
+<td style="text-align: right;">3.243</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">cluster3</td>
+<td style="text-align: right;">0.682</td>
+<td style="text-align: right;">0.401</td>
+<td style="text-align: right;">0.269</td>
+<td style="text-align: right;">1.623</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">cluster4</td>
+<td style="text-align: right;">0.500</td>
+<td style="text-align: right;">0.189</td>
+<td style="text-align: right;">0.173</td>
+<td style="text-align: right;">1.379</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold">
+<summary>Code</summary>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>readr<span class="sc">::</span><span class="fu">read_csv</span>(<span class="st">"../output/calibration.csv"</span>, <span class="at">show_col_types =</span> <span class="cn">FALSE</span>) <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">mutate</span>(dplyr<span class="sc">::</span><span class="fu">across</span>(<span class="fu">c</span>(mean_predicted_probability, observed_return_rate), <span class="sc">~</span> <span class="fu">round</span>(.x, <span class="dv">3</span>))) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  knitr<span class="sc">::</span><span class="fu">kable</span>()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</details>
+<div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<colgroup>
+<col style="width: 24%">
+<col style="width: 12%">
+<col style="width: 35%">
+<col style="width: 27%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: right;">probability_decile</th>
+<th style="text-align: right;">customers</th>
+<th style="text-align: right;">mean_predicted_probability</th>
+<th style="text-align: right;">observed_return_rate</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.470</td>
+<td style="text-align: right;">0.511</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">2</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.672</td>
+<td style="text-align: right;">0.745</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.798</td>
+<td style="text-align: right;">0.702</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">4</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.851</td>
+<td style="text-align: right;">0.830</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">5</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.892</td>
+<td style="text-align: right;">0.915</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.926</td>
+<td style="text-align: right;">0.936</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">7</td>
+<td style="text-align: right;">47</td>
+<td style="text-align: right;">0.958</td>
+<td style="text-align: right;">0.979</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0.981</td>
+<td style="text-align: right;">0.978</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0.992</td>
+<td style="text-align: right;">1.000</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">46</td>
+<td style="text-align: right;">0.999</td>
+<td style="text-align: right;">0.978</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Calibration compares average predicted probability with observed return rate by prediction decile. Large gaps would indicate that the probabilities should be recalibrated before using them to set campaign thresholds or estimate expected value.</p>
+<p>The coefficient table should be read as association, not causation. In this model, recency has an odds ratio below one, consistent with customers who have gone longer without purchasing being less likely to return, while product diversity has an odds ratio above one. Correlated measures such as frequency, monetary value, and product breadth can make individual coefficients unstable; PCA scores or regularized models would be reasonable robustness checks.</p>
+<p>The cluster-augmented fit also produces a convergence warning because the smallest, highest-return cluster is close to complete separation. This is another reason to use the held-out ranking metrics for campaign prioritization and to treat individual coefficient significance as exploratory rather than definitive.</p>
+</section>
+<section id="limitations-and-test-design" class="level1">
+<h1>Limitations and test design</h1>
+<p>The data support segmentation and prediction, but not a causal claim that a marketing action will create additional purchases. The budget is therefore a planning allocation with explicit assumptions: growth customers receive the largest experimental share, loyal customers receive efficient protection, and low-value at-risk customers receive low-cost contact.</p>
+<p>The implementation should randomly assign eligible customers within each segment to treatment and control. Treatment can receive the proposed offer or communication while control receives the current standard experience. After the campaign, compare incremental retention, revenue, gross margin, and cost per incremental retained household. Report results by segment so a profitable overall effect does not hide harm or wasted spending in a smaller group.</p>
+<p>The decision would improve with customer-level gross margin, offer redemption and contact costs, channel reachability, historical campaign exposure, and a longer observation window. Those fields would allow the business to estimate expected incremental profit rather than using spend and return as proxies for value.</p>
+</section>
+
 </main>
-</body>
-</html>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

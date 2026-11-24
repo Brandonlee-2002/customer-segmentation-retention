@@ -19,6 +19,8 @@ source("../analysis/project_3_analysis.R")
 
 # Executive summary
 
+**Project links:** [source code](https://github.com/Brandonlee-2002/customer-segmentation-retention) · [AI use log](https://github.com/Brandonlee-2002/customer-segmentation-retention/blob/main/AI_LOG.md)
+
 This analysis uses household purchase behavior from January 1 through September 30, 2017 to segment customers and predict whether they purchase again during the October 1 through December 31 holdout period. There are `r nrow(customer_data)` households in the analysis, and the observed holdout return rate is `r scales::percent(mean(customer_data$retained), accuracy = 0.1)`.
 
 The analysis identifies four actionable groups. High-value loyal shoppers have the greatest observed value and return rate, but they do not automatically receive the largest budget because many are likely to return without an expensive intervention. The largest experimental allocation goes to growth-potential regulars, who have substantial value and a lower return rate than the two most active groups. The proposed allocation is deliberately non-equal and totals $1,000,000.

@@ -34,8 +34,9 @@ The analysis uses January 1â€“September 30 as the feature period and October 1â€
 
 ## Published project
 
-- [GitHub Pages landing page](https://brandonlee-2002.github.io/customer-segmentation-retention/)
-- [Rendered project report](https://brandonlee-2002.github.io/customer-segmentation-retention/report.html)
+The landing page and full report are now the same published page:
+
+- [Open the published report](https://brandonlee-2002.github.io/customer-segmentation-retention/)
 
 ## Current status
 
