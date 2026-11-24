@@ -32,6 +32,11 @@ This project uses the **dunnhumby Complete Journey** data to identify customer g
 
 The analysis uses January 1–September 30 as the feature period and October 1–December 31 as the holdout period. The exact dates are inferred from the transaction data so the script remains reproducible if the package data are refreshed.
 
+## Published project
+
+- [GitHub Pages landing page](https://brandonlee-2002.github.io/customer-segmentation-retention/)
+- [Rendered project report](https://brandonlee-2002.github.io/customer-segmentation-retention/report.html)
+
 ## Current status
 
 The completed analysis includes customer-level feature construction, PCA variance and loading interpretation, seeded k-means diagnostics, four business segments, held-out logistic-regression evaluation, calibration and segment-level performance tables, and a non-equal $1,000,000 budget recommendation. The report documents the allocation as a planning framework and proposes randomized treatment/control testing because the observational data do not identify causal marketing lift.
