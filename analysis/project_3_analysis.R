@@ -1,4 +1,4 @@
-# Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation
+# Customer Segmentation and Retention Strategy: Allocating a $1M Marketing Budget
 
 suppressPackageStartupMessages({
   library(completejourney)
@@ -357,4 +357,4 @@ budget_plot <- ggplot(budget_plot_data, aes(reorder(segment_label, value), value
   theme_minimal(base_size = 12)
 ggsave("output/figures/budget_allocation.png", budget_plot, width = 9, height = 5, dpi = 160)
 
-message("Project 3 analysis complete. Review the rendered report and generated model diagnostics.")
+message("Customer Segmentation and Retention Strategy analysis complete. Review the rendered report and generated model diagnostics.")

@@ -1,5 +1,5 @@
 ---
-title: "Project 3: Customer Segmentation, Retention Modeling, and Marketing Allocation"
+title: "Customer Segmentation and Retention Strategy: Allocating a $1M Marketing Budget"
 subtitle: "Using PCA, k-means clustering, and logistic regression to make a $1 million marketing decision"
 author: "Brandon Lee"
 format:

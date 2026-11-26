@@ -2,7 +2,7 @@
 
 ## Project
 
-Customer Segmentation, Retention Modeling, and Marketing Allocation
+Customer Segmentation and Retention Strategy: Allocating a $1M Marketing Budget
 
 ## Purpose
 

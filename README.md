@@ -1,4 +1,4 @@
-# Customer Segmentation & Retention
+# Customer Segmentation and Retention Strategy: Allocating a $1M Marketing Budget
 
 ### Project 3 · Customer analytics, retention modeling, and marketing allocation
 
