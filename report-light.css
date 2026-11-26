@@ -24,10 +24,11 @@ main.content { padding-bottom: 5rem; }
 .quarto-title-block {
   position: relative;
   margin: 0 -1.5rem 3rem;
-  padding: 4.5rem clamp(1.5rem, 7vw, 6rem) 4rem;
+  padding: 3.25rem clamp(1.5rem, 7vw, 6rem) 3.5rem;
   color: #fff;
   background: var(--project-navy);
-  border-bottom: .45rem solid var(--project-orange);
+  border-top: .35rem solid var(--project-orange);
+  border-bottom: 1px solid rgba(255,255,255,.18);
   box-shadow: 0 1.25rem 2.5rem rgba(20, 33, 61, .14);
   overflow: hidden;
 }
@@ -41,24 +42,27 @@ main.content { padding-bottom: 5rem; }
   letter-spacing: .16em;
 }
 .quarto-title-block .title {
-  max-width: 900px;
+  max-width: 980px;
   color: #fff;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(2.2rem, 5vw, 4.4rem);
-  line-height: 1.03;
-  letter-spacing: -.055em;
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: clamp(2rem, 4vw, 3.45rem);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.045em;
 }
 .quarto-title-block .subtitle {
-  max-width: 700px;
-  margin-top: 1.25rem;
+  max-width: 760px;
+  margin-top: 1rem;
   color: #dcece7;
-  font-size: 1.12rem;
+  font-size: 1.03rem;
+  line-height: 1.5;
 }
 .quarto-title-block .quarto-title-meta { color: #dcece7; }
 
 h1, h2, h3 {
   color: var(--project-navy);
-  font-family: Georgia, "Times New Roman", serif;
+  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 700;
   letter-spacing: -.025em;
 }
 h1 {
