@@ -1,5 +1,5 @@
-segment_label,customers,allocation,allocation_per_household,assumed_incremental_margin,break_even_retained_households,break_even_rate
-Frequent broad shoppers,646,300000,464.39628482972137,500,600,0.9287925696594427
-High-value loyal shoppers,169,200000,1183.4319526627219,500,400,2.366863905325444
-Growth-potential regulars,1113,450000,404.3126684636119,500,900,0.8086253369272237
-At-risk low-engagement shoppers,400,50000,125,500,100,0.25
+segment_label,customers,non_returners,max_possible_lift,allocation,allocation_per_household,assumed_incremental_margin,break_even_retained_households,break_even_rate,feasible_retention_payback
+Frequent broad shoppers,646,10,10,300000,464.39628482972137,100,3000,4.643962848297214,FALSE
+High-value loyal shoppers,169,1,1,200000,1183.4319526627219,100,2000,11.834319526627219,FALSE
+Growth-potential regulars,1113,154,154,450000,404.3126684636119,100,4500,4.0431266846361185,FALSE
+At-risk low-engagement shoppers,400,167,167,50000,125,100,500,1.25,FALSE

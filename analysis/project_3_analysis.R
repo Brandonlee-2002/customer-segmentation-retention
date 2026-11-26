@@ -8,6 +8,7 @@ suppressPackageStartupMessages({
 
 dir.create("output", showWarnings = FALSE, recursive = TRUE)
 dir.create("output/figures", showWarnings = FALSE, recursive = TRUE)
+segment_colors <- c(`1` = "#0f766e", `2` = "#f59e0b", `3` = "#2563eb", `4` = "#c2410c")
 
 # -----------------------------
 # 1. Load and inspect source data
@@ -135,6 +136,7 @@ segment_profile <- segmented_data %>%
   summarise(
     customers = n(),
     customer_pct = n() / nrow(segmented_data),
+    non_returners = sum(retained == 0),
     across(all_of(c("recency", "frequency", "monetary", "avg_basket", "product_diversity", "PC1", "PC2")), ~ median(.x, na.rm = TRUE)),
     holdout_return_rate = mean(retained),
     .groups = "drop"
@@ -143,6 +145,7 @@ write_csv(segment_profile, "output/segment_profile.csv")
 
 cluster_plot <- ggplot(segmented_data, aes(PC1, PC2, color = cluster)) +
   geom_point(alpha = 0.45, size = 1.5) +
+  scale_color_manual(values = segment_colors) +
   labs(title = "Households in PCA space", x = "PC1", y = "PC2", color = "Cluster") +
   theme_minimal(base_size = 12)
 ggsave("output/figures/clusters_pc1_pc2.png", cluster_plot, width = 8, height = 5, dpi = 160)
@@ -168,6 +171,7 @@ profile_plot_data <- segmented_data %>%
   pivot_longer(-cluster, names_to = "feature", values_to = "standardized_mean")
 profile_plot <- ggplot(profile_plot_data, aes(feature, standardized_mean, group = cluster, color = cluster)) +
   geom_hline(yintercept = 0, color = "grey75") + geom_line() + geom_point(size = 2) +
+  scale_color_manual(values = segment_colors) +
   labs(title = "Segment profiles on standardized behavior", x = NULL, y = "Standardized mean", color = "Cluster") +
   theme_minimal(base_size = 12) + theme(axis.text.x = element_text(angle = 25, hjust = 1))
 ggsave("output/figures/segment_profiles.png", profile_plot, width = 8, height = 5, dpi = 160)
@@ -289,7 +293,9 @@ evaluation_plot <- ggplot(roc_plot_data, aes(x, y)) +
   geom_abline(data = tibble(panel = "ROC curve"), aes(intercept = 0, slope = 1), linetype = 2, color = "grey60") +
   geom_line(color = "#0f766e", linewidth = 1) + geom_point(color = "#14213d", size = 1.5) +
   facet_wrap(~ panel, scales = "free", nrow = 1) +
-  labs(title = "Held-out ranking and calibration", x = NULL, y = NULL) +
+  scale_x_continuous(labels = scales::percent_format(accuracy = 1)) +
+  scale_y_continuous(labels = scales::percent_format(accuracy = 1)) +
+  labs(title = "Held-out ranking and calibration", x = "Rate / predicted probability", y = "Rate / observed probability") +
   theme_minimal(base_size = 12)
 ggsave("output/figures/model_evaluation.png", evaluation_plot, width = 9, height = 4.5, dpi = 160)
 
@@ -321,19 +327,21 @@ budget_policy <- segment_profile %>%
     budget_pct = recode(as.character(cluster), `1` = 0.30, `2` = 0.20, `3` = 0.45, `4` = 0.05),
     allocation = budget_pct * 1000000,
     allocation_per_household = allocation / customers,
-    assumed_incremental_margin = 500,
+    assumed_incremental_margin = 100,
+    max_possible_lift = non_returners,
     break_even_retained_households = ceiling(allocation / assumed_incremental_margin),
     break_even_rate = break_even_retained_households / customers,
+    feasible_retention_payback = break_even_retained_households <= max_possible_lift,
     justification = recode(as.character(cluster),
       `1` = "Large, valuable base with very high observed return; protect value efficiently.",
       `2` = "Highest value and return; use retention touches rather than broad discounting.",
       `3` = "Largest group with meaningful room to grow; reserve the largest test allocation.",
       `4` = "Lowest value and return; cap cost while testing inexpensive reactivation.")) %>%
-  select(segment_label, customers, holdout_return_rate, monetary, marketing_action, allocation, budget_pct, allocation_per_household, assumed_incremental_margin, break_even_retained_households, break_even_rate, justification)
+  select(segment_label, customers, non_returners, holdout_return_rate, monetary, marketing_action, allocation, budget_pct, allocation_per_household, assumed_incremental_margin, max_possible_lift, break_even_retained_households, break_even_rate, feasible_retention_payback, justification)
 write_csv(budget_policy, "output/budget_allocation_starting_point.csv")
 write_csv(
   budget_policy %>%
-    select(segment_label, customers, allocation, allocation_per_household, assumed_incremental_margin, break_even_retained_households, break_even_rate),
+    select(segment_label, customers, non_returners, max_possible_lift, allocation, allocation_per_household, assumed_incremental_margin, break_even_retained_households, break_even_rate, feasible_retention_payback),
   "output/budget_sensitivity.csv"
 )
 
@@ -341,8 +349,10 @@ budget_plot_data <- budget_policy %>%
   select(segment_label, allocation, allocation_per_household) %>%
   pivot_longer(c(allocation, allocation_per_household), names_to = "measure", values_to = "value") %>%
   mutate(measure = recode(measure, allocation = "Allocation ($)", allocation_per_household = "$ per household"))
-budget_plot <- ggplot(budget_plot_data, aes(reorder(segment_label, value), value, fill = measure)) +
+budget_plot <- ggplot(budget_plot_data, aes(reorder(segment_label, value), value, fill = segment_label)) +
   geom_col(show.legend = FALSE) + coord_flip() + facet_wrap(~ measure, scales = "free_x") +
+  scale_fill_manual(values = setNames(segment_colors, c("Frequent broad shoppers", "High-value loyal shoppers", "Growth-potential regulars", "At-risk low-engagement shoppers"))) +
+  scale_y_continuous(labels = scales::dollar_format()) +
   labs(title = "Budget allocation and planning intensity", x = NULL, y = NULL) +
   theme_minimal(base_size = 12)
 ggsave("output/figures/budget_allocation.png", budget_plot, width = 9, height = 5, dpi = 160)
