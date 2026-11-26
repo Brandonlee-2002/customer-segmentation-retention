@@ -1,11 +1,11 @@
 :root {
-  --project-navy: #14213d;
-  --project-teal: #13795b;
-  --project-orange: #d97706;
-  --project-ink: #263449;
-  --project-muted: #667085;
-  --project-line: #d9e1e6;
-  --project-paper: #f7f7f3;
+  --project-navy: #173d43;
+  --project-teal: #176b75;
+  --project-orange: #aa6427;
+  --project-ink: #293e42;
+  --project-muted: #617375;
+  --project-line: #dbe4df;
+  --project-paper: #fafbf8;
   --project-panel: #ffffff;
 }
 
@@ -20,44 +20,35 @@ body {
 #quarto-content { max-width: 1100px; margin: 0 auto; }
 main.content { padding-bottom: 5rem; }
 
-/* Editorial title band: a decision brief, not a stock report cover. */
+/* Yelp-style editorial title sequence: restrained, readable, and content-first. */
 .quarto-title-block {
-  position: relative;
-  margin: 0 -1.5rem 3rem;
-  padding: 3.25rem clamp(1.5rem, 7vw, 6rem) 3.5rem;
-  color: #fff;
-  background: var(--project-navy);
-  border-top: .35rem solid var(--project-orange);
-  border-bottom: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 1.25rem 2.5rem rgba(20, 33, 61, .14);
-  overflow: hidden;
-}
-.quarto-title-block::after {
-  content: "01 / DECISION BRIEF";
-  position: absolute;
-  right: clamp(1.5rem, 7vw, 6rem);
-  bottom: 1.25rem;
-  color: #b8d9ce;
-  font: 700 .72rem/1.2 ui-monospace, SFMono-Regular, Menlo, monospace;
-  letter-spacing: .16em;
+  position: static;
+  margin: 2.5rem 0 2.2rem;
+  padding: 0 0 1.8rem;
+  color: var(--project-ink);
+  background: transparent;
+  border-top: 0;
+  border-bottom: 1px solid var(--project-line);
+  box-shadow: none;
+  overflow: visible;
 }
 .quarto-title-block .title {
-  max-width: 980px;
-  color: #fff;
-  font-family: "Avenir Next", Avenir, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  font-size: clamp(2rem, 4vw, 3.45rem);
+  max-width: 900px;
+  color: var(--project-navy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.35rem, 4vw, 3.65rem);
   font-weight: 700;
   line-height: 1.08;
   letter-spacing: -.045em;
 }
 .quarto-title-block .subtitle {
-  max-width: 760px;
+  max-width: 750px;
   margin-top: 1rem;
-  color: #dcece7;
-  font-size: 1.03rem;
+  color: var(--project-muted);
+  font-size: 1.08rem;
   line-height: 1.5;
 }
-.quarto-title-block .quarto-title-meta { color: #dcece7; }
+.quarto-title-block .quarto-title-meta { color: var(--project-muted); }
 
 h1, h2, h3 {
   color: var(--project-navy);
@@ -66,19 +57,21 @@ h1, h2, h3 {
   letter-spacing: -.025em;
 }
 h1 {
-  margin-top: 4rem;
-  padding: .65rem .9rem .7rem;
+  margin-top: 2.5rem;
+  padding: 1.4rem 0 .65rem;
   border: 0;
-  border-left: .4rem solid var(--project-orange);
-  background: linear-gradient(90deg, #fff8ec, rgba(255,248,236,0));
+  border-bottom: 1px solid var(--project-line);
+  background: transparent;
+  font-family: Georgia, "Times New Roman", serif;
   font-size: clamp(1.65rem, 3vw, 2.25rem);
 }
 h2 {
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   padding-bottom: .35rem;
   border-bottom: 1px solid var(--project-line);
-  color: var(--project-teal);
-  font-size: 1.35rem;
+  color: var(--project-navy);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.65rem;
   letter-spacing: -.015em;
 }
 h3 { margin-top: 2rem; }
